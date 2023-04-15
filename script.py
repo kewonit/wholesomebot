@@ -32,8 +32,7 @@ reddit = praw.Reddit(
 cache = {}
 
 # Subreddit and trigger phrase
-subreddit_names = ['flatapartmentcheck',
-                   'indianteenagers', 'jeeneetards', 'twoxindia']
+subreddit_names = ['IndianTeenagers', 'JEENEETards']
 trigger_phrases = ['!wholesomenesscheck', '!wholesomecheck', '!uwucheck']
 
 # Bot username
