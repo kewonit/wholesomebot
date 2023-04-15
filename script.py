@@ -59,11 +59,12 @@ for subreddit_name in subreddit_names:
 
             # Check if bot is being called
             if user_name.lower() == bot_username.lower():
-                # Construct reply text with total times bot was called
-                reply_text = f'The wholesome counter bot has been called {times_called+1} times till date.'
-
-                # Add comment to list of comments to reply to
-                comments_to_reply.append((incoming_comment, reply_text))
+                # Check if comment contains trigger phrase
+                if any(phrase in incoming_comment.body for phrase in trigger_phrases):
+                    # Construct reply text with total times bot was called
+                    reply_text = f'The wholesome counter bot has been called {times_called+1} times till date.'
+                    # Add comment to list of comments to reply to
+                    comments_to_reply.append((incoming_comment, reply_text))
 
             else:
                 # Get top 1,000 comments of user
@@ -108,7 +109,7 @@ for subreddit_name in subreddit_names:
             table = "\n".join(table_rows)
 
             # Construct reply text with wholesome count and table
-            reply_text = f'The number of wholesome occurrences in the recent 500 comments of u/{user_name} is {wholesome_count}.\n\n| Word | Count |\n| --- | --- |\n{table} |'
+            reply_text = f'The number of wholesome occurrences in the recent 500 comments of u/{user_name} is {wholesome_count}.\n\n| Word | Count |\n| --- | --- |\n{table} |\n\nWanna do something wholesome? Leave a \u2B50 at the [GitHub repository](https://github.com/MeowthyVoyager/reddit-wholesome-counter).'
 
             # Reply to comment
             incoming_comment.reply(reply_text)
