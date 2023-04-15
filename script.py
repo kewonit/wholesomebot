@@ -33,17 +33,11 @@ cache = {}
 
 # Subreddit and trigger phrase
 subreddit_names = ['IndianTeenagers', 'JEENEETards']
-trigger_phrases = ['!wholesomenesscheck', '!wholesomecheck', '!uwucheck']
+trigger_phrases = ['!wholesomenesscheck',
+                   '!wholesomecheck', '!uwucheck', '!uwucheckself']
 
 # Bot username
 bot_username = 'wholesome-counter'
-
-# Read times_called from file or set to 0 if file is empty or doesn't exist
-try:
-    with open('times_called.txt', 'r') as f:
-        times_called = int(f.read())
-except (ValueError, FileNotFoundError):
-    times_called = 0
 
 # Listen for comments in subreddits
 comments_to_reply = []
@@ -51,22 +45,28 @@ for subreddit_name in subreddit_names:
     subreddit = reddit.subreddit(subreddit_name)
     for incoming_comment in subreddit.stream.comments(skip_existing=True):
         # Check if comment contains any of the trigger phrases
-        if any(phrase in incoming_comment.body for phrase in trigger_phrases):
-            # Get parent comment and author name
-            parent_comment = incoming_comment.parent()
-            user_name = parent_comment.author.name
+        if any(phrase in incoming_comment.body.lower() for phrase in trigger_phrases):
+            # Check if trigger phrase is !uwucheckself and set username
+            if '!uwucheckself' in incoming_comment.body.lower():
+                user_name = incoming_comment.author.name
+            else:
+                # Get parent comment and author name
+                if '[self]' in incoming_comment.body:
+                    parent_comment = incoming_comment
+                    user_name = incoming_comment.author.name
+                else:
+                    parent_comment = incoming_comment.parent()
+                    user_name = incoming_comment.parent().author.name
 
             # Check if bot is being called
             if user_name.lower() == bot_username.lower():
-                # Check if comment contains trigger phrase
-                if any(phrase in incoming_comment.body for phrase in trigger_phrases):
-                    # Construct reply text with total times bot was called
-                    reply_text = f'The wholesome counter bot has been called {times_called+1} times till date.'
-                    # Add comment to list of comments to reply to
-                    comments_to_reply.append((incoming_comment, reply_text))
+                # Construct reply text without times_called
+                reply_text = 'This is the Reddit wholesome counter bot. Leave a comment with a username to get their wholesome count!'
+                # Add comment to list of comments to reply to
+                comments_to_reply.append((incoming_comment, reply_text))
 
             else:
-                # Get top 1,000 comments of user
+                # Get top 500 comments of user
                 # Check if cached response exists for user
                 # 604800 seconds = 1 week
                 if user_name in cache and 'timestamp' in cache[user_name] and time.time() - cache[user_name]['timestamp'] <= 604800:
@@ -101,19 +101,17 @@ for subreddit_name in subreddit_names:
                             wholesome_count += 1
                             word_count[token] += 1
 
-            # Construct table of wholesome words and counts
-            table_rows = [
-                f"| {word} | {count} |" for word, count in word_count.items()
-            ]
-            table = "\n".join(table_rows)
+                # Construct table of wholesome words and counts
+                table_rows = [
+                    f"| {word} | {count} |" for word, count in word_count.items()
+                ]
+                table = "\n".join(table_rows)
 
-            # Construct reply text with wholesome count and table
-            reply_text = f'The number of wholesome occurrences in the recent 500 comments of u/{user_name} is {wholesome_count}.\n\n| Word | Count |\n| --- | --- |\n{table} |\n\nWanna do something wholesome? Leave a \u2B50 at the [GitHub repository](https://github.com/MeowthyVoyager/reddit-wholesome-counter).'
+                # Construct reply text with wholesome count and table
+                if '!uwucheckself' in incoming_comment.body.lower():
+                    reply_text = f'The number of wholesome occurrences in your recent 500 comments is {wholesome_count}.\n\n| Word | Count |\n| --- | --- |\n{table} |\n\nStay wholesome! \u2764 \n\nWanna do something even more wholesome? Leave a \u2B50 at the [GitHub repository](https://github.com/MeowthyVoyager/reddit-wholesome-counter).'
+                else:
+                    reply_text = f'The number of wholesome occurrences in the recent 500 comments of u/{user_name} is {wholesome_count}.\n\n| Word | Count |\n| --- | --- |\n{table} |\n\nStay wholesome! \u2764'
 
-            # Reply to comment
-            incoming_comment.reply(reply_text)
-
-            # Increment times_called counter and write to file
-            times_called += 1
-            with open('times_called.txt', 'w') as f:
-                f.write(str(times_called))
+                # Add comment to list of comments to reply to
+                incoming_comment.reply(reply_text)
