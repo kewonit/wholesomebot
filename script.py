@@ -32,7 +32,7 @@ reddit = praw.Reddit(
 cache = {}
 
 # Subreddit and trigger phrase
-subreddit_names = ['IndianTeenagers', 'JEENEETards']
+subreddit_names = "IndianTeenagers, flatapartmentcheck"
 trigger_phrases = ['!wholesomenesscheck',
                    '!wholesomecheck', '!uwucheck', '!uwucheckself']
 
@@ -42,7 +42,7 @@ bot_username = 'wholesome-counter'
 # Listen for comments in subreddits
 comments_to_reply = []
 for subreddit_name in subreddit_names:
-    subreddit = reddit.subreddit(subreddit_name)
+    subreddit = reddit.subreddit("IndianTeenagers+flatapartmentcheck")
     for incoming_comment in subreddit.stream.comments(skip_existing=True):
         # Check if comment contains any of the trigger phrases
         if any(phrase in incoming_comment.body.lower() for phrase in trigger_phrases):
@@ -111,7 +111,7 @@ for subreddit_name in subreddit_names:
                 if '!uwucheckself' in incoming_comment.body.lower():
                     reply_text = f'The number of wholesome occurrences in your recent 500 comments is {wholesome_count}.\n\n| Word | Count |\n| --- | --- |\n{table} |\n\nStay wholesome! \u2764 \n\nWanna do something even more wholesome? Leave a \u2B50 at the [GitHub repository](https://github.com/MeowthyVoyager/reddit-wholesome-counter).'
                 else:
-                    reply_text = f'The number of wholesome occurrences in the recent 500 comments of u/{user_name} is {wholesome_count}.\n\n| Word | Count |\n| --- | --- |\n{table} |\n\nStay wholesome! \u2764'
+                    reply_text = f'The number of wholesome occurrences in the recent 500 comments of u/{user_name} is {wholesome_count}.\n\n| Word | Count |\n| --- | --- |\n{table} |\n\nStay wholesome! \u2764 \n\nWanna do something even more wholesome? Leave a \u2B50 at the [GitHub repository](https://github.com/MeowthyVoyager/reddit-wholesome-counter).'
 
                 # Add comment to list of comments to reply to
                 incoming_comment.reply(reply_text)
