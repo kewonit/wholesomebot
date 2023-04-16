@@ -32,7 +32,7 @@ reddit = praw.Reddit(
 cache = {}
 
 # Subreddit and trigger phrase
-subreddit_names = "IndianTeenagers, flatapartmentcheck"
+subreddit_names = "IndianTeenagers, flatapartmentcheck, JEENEETards"
 trigger_phrases = ['!wholesomenesscheck',
                    '!wholesomecheck', '!uwucheck', '!uwucheckself']
 
@@ -42,7 +42,8 @@ bot_username = 'wholesome-counter'
 # Listen for comments in subreddits
 comments_to_reply = []
 for subreddit_name in subreddit_names:
-    subreddit = reddit.subreddit("IndianTeenagers+flatapartmentcheck")
+    subreddit = reddit.subreddit(
+        "IndianTeenagers+flatapartmentcheck+JEENEETards")
     for incoming_comment in subreddit.stream.comments(skip_existing=True):
         # Check if comment contains any of the trigger phrases
         if any(phrase in incoming_comment.body.lower() for phrase in trigger_phrases):
