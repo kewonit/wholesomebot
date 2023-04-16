@@ -77,6 +77,8 @@ for subreddit_name in subreddit_names:
                     url = f'https://api.pushshift.io/reddit/comment/search?html_decode=true&after=0&author={user_name}&size=500'
                     with requests.Session() as session:
                         response = session.get(url)
+                        # Add a sleep of 10 seconds after each API request
+                        time.sleep(10)
                     api_comments = response.json()['data']
 
                     # Store response in cache
