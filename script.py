@@ -5,6 +5,7 @@ import requests
 import re
 import collections
 import time
+import json
 
 # Open the text file containing the words
 with open('wholesomewords.txt', 'r') as f:
@@ -32,7 +33,7 @@ reddit = praw.Reddit(
 cache = {}
 
 # Subreddit and trigger phrase
-subreddit_names = "IndianTeenagers, flatapartmentcheck, JEENEETards"
+subreddit_names = "flatapartmentcheck+IndianTeenagers+JEENEETards"
 trigger_phrases = ['!wholesomenesscheck',
                    '!wholesomecheck', '!uwucheck', '!uwucheckself']
 
@@ -43,7 +44,7 @@ bot_username = 'wholesome-counter'
 comments_to_reply = []
 for subreddit_name in subreddit_names:
     subreddit = reddit.subreddit(
-        "IndianTeenagers+flatapartmentcheck+JEENEETards")
+        "flatapartmentcheck+IndianTeenagers+JEENEETards")
     for incoming_comment in subreddit.stream.comments(skip_existing=True):
         # Check if comment contains any of the trigger phrases
         if any(phrase in incoming_comment.body.lower() for phrase in trigger_phrases):
@@ -75,11 +76,16 @@ for subreddit_name in subreddit_names:
                 else:
                     # Make API request for user comments
                     url = f'https://api.pushshift.io/reddit/comment/search?html_decode=true&after=0&author={user_name}&size=500'
-                    with requests.Session() as session:
-                        response = session.get(url)
-                        # Add a sleep of 10 seconds after each API request
-                        time.sleep(10)
-                    api_comments = response.json()['data']
+                    try:
+                        with requests.Session() as session:
+                            response = session.get(url)
+                            # Add a sleep of 7 seconds after each API request
+                            time.sleep(7)
+                        api_comments = response.json()['data']
+                    except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
+                        print(
+                            f"Error occurred while making the API request: {e}")
+                        api_comments = []
 
                     # Store response in cache
                     cache[user_name] = {
@@ -117,4 +123,7 @@ for subreddit_name in subreddit_names:
                     reply_text = f'The number of wholesome occurrences in the recent 500 comments of u/{user_name} is {wholesome_count}.\n\n| Word | Count |\n| --- | --- |\n{table} |\n\nStay wholesome!  \n\nWanna do something even more wholesome? Leave a \u2B50 at the [GitHub repository](https://github.com/MeowthyVoyager/reddit-wholesome-counter).'
 
                 # Add comment to list of comments to reply to
+                comments_to_reply.append((incoming_comment, reply_text))
+
+                # Call reply() on the comment immediately
                 incoming_comment.reply(reply_text)
