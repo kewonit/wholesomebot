@@ -1,4 +1,4 @@
-# Reddit Wholesome Counter ^_^
+# Reddit bot that counts the number of wholesome comments ^_^
 
 An bot that counts the number of wholesome comments and replies it back to the user
 
