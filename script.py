@@ -75,17 +75,26 @@ for subreddit_name in subreddit_names:
                     api_comments = cache[user_name]['response']
                 else:
                     # Make API request for user comments
-                    url = f'https://api.pushshift.io/reddit/comment/search?html_decode=true&after=0&author={user_name}&size=500'
-                    try:
-                        with requests.Session() as session:
-                            response = session.get(url)
-                            # Add a sleep of 7 seconds after each API request
-                            time.sleep(7)
-                        api_comments = response.json()['data']
-                    except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
-                        print(
-                            f"Error occurred while making the API request: {e}")
-                        api_comments = []
+                    url = f'https://api.pushshift.io/reddit/comment/search?author={user_name}&size=250'
+                    retries = 4
+                    for i in range(retries):
+                        try:
+                            with requests.Session() as session:
+                                response = session.get(url)
+                                # Add a sleep of 7 seconds after each API request
+                                time.sleep(7)
+                            api_comments = response.json()['data']
+                            break
+                        # Add 3 retries
+                        except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
+                            if i == retries - 1:
+                                print(
+                                    f"Error occurred while making the API request: {e}")
+                                api_comments = []
+                            else:
+                                print(
+                                    f"Retrying API request. Attempt {i+1} of {retries}.")
+                                time.sleep(10)
 
                     # Store response in cache
                     cache[user_name] = {
