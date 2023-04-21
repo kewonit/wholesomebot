@@ -41,7 +41,8 @@ bot_username = 'wholesome-counter'
 # Listen for comments in subreddits
 comments_to_reply = []
 for subreddit_name in subreddit_names:
-    subreddit = reddit.subreddit("flatapartmentcheck+IndianTeenagers+JEENEETards")
+    subreddit = reddit.subreddit(
+        "flatapartmentcheck+IndianTeenagers+JEENEETards")
     for incoming_comment in subreddit.stream.comments(skip_existing=True):
         # Check if comment contains any of the trigger phrases
         if any(phrase in incoming_comment.body.lower() for phrase in trigger_phrases):
@@ -66,24 +67,28 @@ for subreddit_name in subreddit_names:
 
             else:
                 # Get top 300 comments of user
-                # Check if cached response exists for user
-                # 604800 seconds = 1 week
-                if user_name in cache and 'timestamp' in cache[user_name] and time.time() - cache[user_name]['timestamp'] <= 604800:
+                # Check if cached response exists, then skip it to avoid spam
+                # 640 seconds = 10 minutes
+                if user_name in cache and 'timestamp' in cache[user_name] and time.time() - cache[user_name]['timestamp'] <= 640:
                     api_comments = cache[user_name]['response']
                 else:
                     # Make API request for user comments
                     retries = 3
                     for i in range(retries):
                         try:
-                            api_comments = reddit.redditor(user_name).comments.new(limit=300)
-                            api_comments = [comment for comment in api_comments]
+                            api_comments = reddit.redditor(
+                                user_name).comments.new(limit=300)
+                            api_comments = [
+                                comment for comment in api_comments]
                             break
                         except praw.exceptions.PRAWException as e:
                             if i == retries - 1:
-                                print(f"Error occurred while making the API request: {e}")
+                                print(
+                                    f"Error occurred while making the API request: {e}")
                                 api_comments = []
                             else:
-                                print(f"Retrying API request. Attempt {i+1} of {retries}.")
+                                print(
+                                    f"Retrying API request. Attempt {i+1} of {retries}.")
                                 time.sleep(10)
 
                     # Store response in cache
@@ -92,14 +97,15 @@ for subreddit_name in subreddit_names:
                         'timestamp': time.time()
                     }
 
-                      # Initialize wholesome count
+                    # Initialize wholesome count
                     wholesome_count = 0
                     word_count = collections.Counter()
 
                     # Analyze comments for wholesome words
                     for comment in api_comments:
                         # Clean and tokenize comment
-                        comment_text = re.sub(r'[^\w\s]', '', comment.body).lower()
+                        comment_text = re.sub(
+                            r'[^\w\s]', '', comment.body).lower()
                         comment_tokens = comment_text.split()
 
                         # Count wholesome occurrences
@@ -122,4 +128,3 @@ for subreddit_name in subreddit_names:
 
                     # Reply to the comment
                     incoming_comment.reply(reply_text)
-
