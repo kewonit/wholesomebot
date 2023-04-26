@@ -102,6 +102,7 @@ for subreddit_name in subreddit_names:
                     word_count = collections.Counter()
 
                     # Analyze comments for wholesome words
+                    comment_count = 0
                     for comment in api_comments:
                         # Clean and tokenize comment
                         comment_text = re.sub(
@@ -113,6 +114,7 @@ for subreddit_name in subreddit_names:
                             if token in wholesome_set:
                                 wholesome_count += 1
                                 word_count[token] += 1
+                        comment_count += 1
 
                     # Construct table of wholesome words and counts
                     table_rows = [
@@ -122,9 +124,9 @@ for subreddit_name in subreddit_names:
 
                     # Construct reply text with wholesome count and table
                     if '!uwucheckself' in incoming_comment.body.lower():
-                        reply_text = f'The number of wholesome occurrences in your recent 300 comments is {wholesome_count}.\n\n| Word | Count |\n| --- | --- |\n{table} |\n\nStay wholesome!  \n\nWanna do something even more wholesome? Leave a \u2B50 at the [GitHub repository](https://github.com/MeowthyVoyager/wholesomebot-reddit).'
+                        reply_text = f'The number of wholesome occurrences in your recent {comment_count} comments is {wholesome_count}.\n\n| Word | Count |\n| --- | --- |\n{table} |\n\nStay wholesome!  \n\nWanna do something even more wholesome? Leave a \u2B50 at the [GitHub repository](https://github.com/MeowthyVoyager/wholesomebot-reddit).'
                     else:
-                        reply_text = f'The number of wholesome occurrences in the recent 300 comments of u/{user_name} is {wholesome_count}.\n\n| Word | Count |\n| --- | --- |\n{table} |\n\nStay wholesome!  \n\nWanna do something even more wholesome? Leave a \u2B50 at the [GitHub repository](https://github.com/MeowthyVoyager/wholesomebot-reddit).'
+                        reply_text = f'The number of wholesome occurrences in the recent {comment_count} comments of u/{user_name} is {wholesome_count}.\n\n| Word | Count |\n| --- | --- |\n{table} |\n\nStay wholesome!  \n\nWanna do something even more wholesome? Leave a \u2B50 at the [GitHub repository](https://github.com/MeowthyVoyager/wholesomebot-reddit).'
 
                     # Reply to the comment
                     incoming_comment.reply(reply_text)
