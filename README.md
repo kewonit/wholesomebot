@@ -1,10 +1,12 @@
 # Reddit bot that counts the number of wholesome comments ^_^
 
-An bot that counts the number of wholesome comments and replies it back to the user
+A bot that counts the number of wholesome comments and replies it back to the user
 
-Send PR to add your subreddit
+~~Send PR to add your subreddit~~ | Fork the repo :)
 
-Currently active on r/IndianTeenagers
+~~Currently active on r/IndianTeenagers~~ | Inactive
+
+![Picture](https://raw.githubusercontent.com/MeowthyVoyager/reddit-wholesome-counter/main/banner.png)
 
 <hr>
 
@@ -27,7 +29,3 @@ REDDIT_USER_AGENT=
 ```
 python script.py
 ```
-
-<hr>
-
-![Picture](https://raw.githubusercontent.com/MeowthyVoyager/reddit-wholesome-counter/main/banner.png)
